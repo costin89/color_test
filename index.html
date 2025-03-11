@@ -32,9 +32,7 @@ let isVertical = true; // Bewegungstyp: true = vertikal, false = horizontal
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  for (let i = 0; i < numStreams; i++) {
-    streams.push(new Stream(random(width), random(-500, 0))); // Random Startposition
-  }
+  restartSketch(); // Initialisiere Streams
 }
 
 function draw() {
@@ -54,10 +52,21 @@ function mousePressed() {
   }
 }
 
-// Taste "V" drücken, um Richtung zu wechseln
+// Taste "V" drücken, um Richtung zu wechseln & Sketch neu zu starten
 function keyPressed() {
   if (key === 'v' || key === 'V') {
-    isVertical = !isVertical; // Bewegung umschalten
+    isVertical = !isVertical; // Richtung umschalten
+    restartSketch(); // Kompletten Sketch neustarten
+  }
+}
+
+// Funktion zum Neuladen der Streams
+function restartSketch() {
+  streams = []; // Alte Streams löschen
+  for (let i = 0; i < numStreams; i++) {
+    let startX = isVertical ? random(width) : random(-500, 0);
+    let startY = isVertical ? random(-500, 0) : random(height);
+    streams.push(new Stream(startX, startY)); // Neue Streams generieren
   }
 }
 

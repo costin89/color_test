@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadrate Echo Effekt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Konfigurierbare Variablen
+        let squareSize = 4;   // Größe der Quadrate
+        let minSpeed = 2;      // Minimale Geschwindigkeit
+        let maxSpeed = 8;      // Maximale Geschwindigkeit
+        let numStreams = 200;   // Anzahl der vertikalen Streams
+        let maxSquaresPerStream = 50; // Maximale Anzahl Quadrate pro Stream
+        let flipflop = true;   // true = gleiche Farbe pro Stream, false = unterschiedliche Farben pro Quadrat
+
+        let streams = [];
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            for (let i = 0; i < numStreams; i++) {
+                streams.push(new Stream(random(width), random(-500, 0))); // Random X-Position
+            }
+        }
+
+        function draw() {
+            background(0, 150); // Leichter Nachzieheffekt für "Geisterbilder"
+            for (let stream of streams) {
+                stream.update();
+                stream.show();
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        class Square {
+            constructor(x, y, speed, color) {
+                this.x = x + random(-squareSize / 2, squareSize / 2); // Zufällige X-Verschiebung für Überlagerung
+                this.y = y;
+                this.speed = speed;
+                this.color = color;
+            }
+
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) {
+                    this.y = 0; // Wieder nach oben setzen
+                }
+            }
+
+            show() {
+                for (let i = 0; i < 5; i++) {  // Anzahl der Nachzieheffekte
+                    let alpha = map(i, 0, 4, 255, 50); // Transparenz nimmt ab
+                    stroke(red(this.color), green(this.color), blue(this.color), alpha);
+                    noFill();
+                    rect(this.x, this.y - i * this.speed * 2, squareSize, squareSize);
+                }
+            }
+        }
+
+        class Stream {
+            constructor(x, y) {
+                this.squares = [];
+                let streamColor = color(random(255), random(255), random(255)); // Eine Farbe pro Stream
+                let numSquares = floor(random(5, maxSquaresPerStream)); // Zufällige Anzahl Quadrate
+                for (let i = 0; i < numSquares; i++) {
+                    let quadColor = flipflop ? streamColor : color(random(255), random(255), random(255)); // Flipflop: eine Farbe pro Stream oder random für jedes Quadrat
+                    let xOffset = random(-squareSize, squareSize); // Zufällige X-Verschiebung für Überlagerung
+                    this.squares.push(new Square(x + xOffset, y + i * squareSize, random(minSpeed, maxSpeed), quadColor));
+                }
+            }
+
+            update() {
+                for (let sq of this.squares) {
+                    sq.fall();
+                }
+            }
+
+            show() {
+                for (let sq of this.squares) {
+                    sq.show();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -60,6 +60,12 @@ function keyPressed() {
   }
 }
 
+// Wenn das Fenster geändert wird, soll die Canvas-Größe angepasst werden
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  restartSketch(); // Streams anpassen
+}
+
 // Funktion zum Neuladen der Streams
 function restartSketch() {
   streams = []; // Alte Streams löschen
